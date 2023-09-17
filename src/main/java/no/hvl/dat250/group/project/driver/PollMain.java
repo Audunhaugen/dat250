@@ -4,7 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import no.hvl.dat250.group.project.*;
+import no.hvl.dat250.group.project.dao.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public class PollMain {
@@ -17,60 +19,78 @@ public class PollMain {
       em.getTransaction().begin();
       createObjects(em);
       em.getTransaction().commit();
+      em.getTransaction().begin();
+      createObjectsDAO(em);
+      em.getTransaction().commit();
     }
 
   }
 
   private static void createObjects(EntityManager em) {
-//    // Create a Pincode
-//    Answer pincode = new Answer();
-//    pincode.setCode("123");
-//    pincode.setCount(1);
-//
-//// Create a CreditCard
-//    Poll creditCard = new Poll();
-//    creditCard.setNumber(12345);
-//    creditCard.setBalance(-5000);
-//    creditCard.setCreditLimit(-10000);
-//    creditCard.setPincode(pincode);
-//    // Create a second CreditCard
-//    Poll sndCreditCard = new Poll();
-//    sndCreditCard.setNumber(123);
-//    sndCreditCard.setBalance(1);
-//    sndCreditCard.setCreditLimit(2000);
-//    sndCreditCard.setPincode(pincode);
-//
-//    // Create a Bank
-//    Bank bank = new Bank();
-//    bank.setName("Pengebank");
-//    bank.setOwnedCards(Set.of(creditCard,sndCreditCard));
-//
-//    // Set the owning bank for the CreditCard
-//    creditCard.setOwningBank(bank);
-//    sndCreditCard.setOwningBank(bank);
-//
-//    // Create a Customer
-//    User customer = new User();
-//    customer.setName("Max Mustermann");
-//
-//    // Associate the creditcards with the Customer
-//    customer.setCreditCards(Set.of(creditCard,sndCreditCard));
-//
-//    // Create an Address
-//    Result address = new Result();
-//    address.setStreet("Inndalsveien");
-//    address.setNumber(28);
-//    address.setOwners(Set.of(customer));
-//
-//    // Associate the Address with the Customer
-//    customer.setAddresses(Set.of(address));
-//
-//    // Persist the entities to the database
-//    em.persist(bank);
-//    em.persist(customer);
-//    em.persist(address);
-//    em.persist(creditCard);
-//    em.persist(sndCreditCard);
-//    em.persist(pincode);
+    _User creator_user = new _User();
+    creator_user.setUserName("CreatorUser");
+    creator_user.setFirstName("Creator");
+    creator_user.setLastName("User");
+    creator_user.setPassword("password");
+
+    Poll poll = new Poll();
+    poll.setTitle("TestPoll");
+    poll.setDescription("This is a test poll");
+    poll.setCreationTime(LocalDateTime.now());
+    poll.setStatus(true);
+
+    poll.setOwner(creator_user);
+    creator_user.getPolls().add(poll);
+
+    _User answer_user = new _User();
+    answer_user.setUserName("AnswerUser");
+    answer_user.setFirstName("Answer");
+    answer_user.setLastName("User");
+    answer_user.setPassword("password");
+
+    Answer answer = new Answer();
+    answer.setColor(0);
+    answer.setTimeOfVote(LocalDateTime.now());
+    answer.set_user(answer_user);
+    answer.setPoll(poll);
+
+    answer_user.getAnswers().add(answer);
+    poll.getAnswers().add(answer);
+
+    Device device = new Device();
+    device.setPoll(poll);
+    poll.getDevices().add(device);
+
+    Answer anonynousAnswer = new Answer();
+    anonynousAnswer.setColor(1);
+    anonynousAnswer.setTimeOfVote(LocalDateTime.now());
+    anonynousAnswer.setPoll(poll);
+    poll.getAnswers().add(anonynousAnswer);
+    anonynousAnswer.setDevice(device);
+    device.getAnswers().add(anonynousAnswer);
+
+    em.persist(creator_user);
+    em.persist(poll);
+    em.persist(answer_user);
+    em.persist(answer);
+    em.persist(device);
+    em.persist(anonynousAnswer);
+  }
+
+  private static void createObjectsDAO(EntityManager em){
+    AnswerDAO aDAO = new AnswerDAO(em);
+    DeviceDAO dDAO = new DeviceDAO(em);
+    PollDAO pDAO = new PollDAO(em);
+    UserDAO uDAO = new UserDAO(em);
+
+
+    Long userId = uDAO.registerUser("username", "Larry", "Wheels", "12345678");
+    uDAO.updatePassword(userId, "SecretPassword");
+
+    Long pollId = pDAO.newPoll("DAO created Poll", "testing",true,userId);
+    Long deviceId = dDAO.newDevice(pollId);
+
+    Long answerId = aDAO.newAnswer(1, userId, pollId, null);
+    Long answerId2 = aDAO.newAnswer(0,null,pollId, deviceId);
   }
 }

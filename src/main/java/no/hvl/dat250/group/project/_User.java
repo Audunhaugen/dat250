@@ -11,6 +11,7 @@ import java.util.Set;
 public class _User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @Getter
