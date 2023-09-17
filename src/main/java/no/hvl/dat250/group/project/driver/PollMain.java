@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class PollMain {
 
-  static final String PERSISTENCE_UNIT_NAME = "group project";
+  static final String PERSISTENCE_UNIT_NAME = "group-project";
 
   public static void main(String[] args) {
     try (EntityManagerFactory factory = Persistence.createEntityManagerFactory(

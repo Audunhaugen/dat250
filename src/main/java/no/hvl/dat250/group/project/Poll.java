@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -33,5 +34,21 @@ public class Poll {
     //@Setter
     //@OneToMany
     //private Set<Options> options;
+    @ManyToOne
+    @Getter
+    @Setter
+    private _User owner;
+    @OneToMany(mappedBy = "poll")
+    @Getter
+    @Setter
+    private Set<Answer> answers = new HashSet<>();
+    @OneToOne
+    @Getter
+    @Setter
+    private Result result;
+    @OneToMany(mappedBy = "poll")
+    @Getter
+    @Setter
+    private Set<Device> devices = new HashSet<>();
 }
 

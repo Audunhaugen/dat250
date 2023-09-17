@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 public class Answer {
     @Id
@@ -11,5 +13,21 @@ public class Answer {
     @Getter
     private Long id;
 
+    @Getter
+    @Setter
+    private int color;
 
+    @Getter
+    @Setter
+    private Date timeOfVote;
+    @ManyToOne
+    @Getter
+    @Setter
+    private _User _user;
+    @ManyToOne
+    @Setter
+    private Poll poll;
+    @ManyToOne
+    @Setter
+    private Device device;
 }

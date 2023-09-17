@@ -4,21 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Result {
+public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
-    @OneToOne
+    @OneToMany(mappedBy = "device")
     @Getter
     @Setter
+    private Set<Answer> answers = new HashSet<>();
+    @Getter
+    @Setter
+    @ManyToOne
     private Poll poll;
-    @Getter
-    @Setter
-    private int greenVotes;
-    @Getter
-    @Setter
-    private int redVotes;
 }
