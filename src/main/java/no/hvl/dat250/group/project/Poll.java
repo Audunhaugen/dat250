@@ -32,6 +32,10 @@ public class Poll {
     @Setter
     private Boolean status; //open or closed
 
+    @Getter
+    @Setter
+    private Boolean publicPoll;
+
     @ManyToOne
     @Getter
     @Setter
