@@ -38,6 +38,7 @@ public class PollMain {
     poll.setDescription("This is a test poll");
     poll.setCreationTime(LocalDateTime.now());
     poll.setStatus(true);
+    poll.setPublicPoll(true);
 
     poll.setOwner(creator_user);
     creator_user.getPolls().add(poll);
@@ -87,7 +88,7 @@ public class PollMain {
     Long userId = uDAO.registerUser("username", "Larry", "Wheels", "12345678");
     uDAO.updatePassword(userId, "SecretPassword");
 
-    Long pollId = pDAO.newPoll("DAO created Poll", "testing",true,userId);
+    Long pollId = pDAO.newPoll("DAO created Poll", "testing",true,true,userId);
     Long deviceId = dDAO.newDevice(pollId);
 
     Long answerId = aDAO.newAnswer(1, userId, pollId, null);

@@ -13,12 +13,13 @@ public class PollDAO {
     public PollDAO(EntityManager em){
         this.em = em;
     }
-    public Long newPoll(String title, String description, Boolean status,Long userId){
+    public Long newPoll(String title, String description, Boolean status, Boolean publicPoll,Long userId){
        Poll a = new Poll();
        a.setTitle(title);
        a.setDescription(description);
        a.setStatus(status);
        a.setCreationTime(LocalDateTime.now());
+       a.setPublicPoll(publicPoll);
 
         _User user = em.find(_User.class, userId);
         a.setOwner(user);
