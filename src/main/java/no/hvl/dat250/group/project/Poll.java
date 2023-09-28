@@ -14,6 +14,7 @@ public class Poll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Setter
     private Long id;
 
     @Getter
