@@ -10,7 +10,7 @@ import java.util.Map;
 @RequestMapping("/poll")
 public class Poll_controller {
 
-    public static final String TODO_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
+    public static final String POLL_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
 
     public Map<Long, Poll> polls = new HashMap<>();
 
@@ -25,7 +25,7 @@ public class Poll_controller {
     @GetMapping("/{id}")
     public Poll read(@PathVariable Long id){
         if (!polls.containsKey(id)){
-            throw new RuntimeException(TODO_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
         }
         return polls.get(id);
     }
@@ -33,7 +33,7 @@ public class Poll_controller {
     @PutMapping("/{id}")
     public Poll update(@PathVariable Long id, @RequestBody Poll newPoll){
         if (!polls.containsKey(id)){
-            throw new RuntimeException(TODO_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
         }
         Poll poll = polls.get(id);
         poll.setTitle(newPoll.getTitle());
@@ -49,7 +49,7 @@ public class Poll_controller {
     @DeleteMapping("/{id}")
     public Poll delete(@PathVariable Long id){
         if (!polls.containsKey(id)){
-            throw new RuntimeException(TODO_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
         }
         return polls.remove(id);
     }

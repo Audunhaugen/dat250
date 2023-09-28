@@ -12,11 +12,14 @@ public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Setter
     private Long id;
+
     @OneToMany(mappedBy = "device")
     @Getter
     @Setter
     private Set<Answer> answers = new HashSet<>();
+
     @Getter
     @Setter
     @ManyToOne
