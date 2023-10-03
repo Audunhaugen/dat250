@@ -3,12 +3,14 @@ package no.hvl.dat250.group.project.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import no.hvl.dat250.group.project.Answer;
 import no.hvl.dat250.group.project.Device;
 import no.hvl.dat250.group.project.Poll;
 import no.hvl.dat250.group.project._User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public class AnswerDAO {
@@ -42,5 +44,20 @@ public class AnswerDAO {
         em.persist(poll);
         if(deviceId!=null)em.persist(device);
         return a.getId();
+    }
+
+    public Answer getAnswer(Long id){
+        em.getTransaction().begin();
+        Answer a = em.find(Answer.class, id);
+        em.getTransaction().commit();
+        return a;
+    }
+
+    public List<Answer> getAllAnswers(){
+        em.getTransaction().begin();
+        String query = "SELECT * FROM answer";
+        Query q = em.createNativeQuery(query);
+        em.getTransaction().commit();
+        return (List<Answer>) q.getResultList();
     }
 }

@@ -27,9 +27,11 @@ public class Answer {
     @Setter
     private _User _user;
     @ManyToOne
+    @Getter
     @Setter
     private Poll poll;
     @ManyToOne
+    @Getter
     @Setter
     private Device device;
 }
