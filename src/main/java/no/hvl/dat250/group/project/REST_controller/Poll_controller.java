@@ -7,6 +7,7 @@ import jakarta.persistence.Persistence;
 import no.hvl.dat250.group.project.Poll;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
 import no.hvl.dat250.group.project.dao.PollDAO;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,9 +20,6 @@ public class Poll_controller {
     public static final String POLL_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
 
     static final String PERSISTENCE_UNIT_NAME = "group-project";
-    public Map<Long, Poll> polls = new HashMap<>();
-
-    public Long ids = 0L; //counter for ids, starts from 0
 
     PollDAO pollDAO;
 
@@ -35,40 +33,49 @@ public class Poll_controller {
     @PostMapping
     public Poll insert(@RequestBody Poll poll){
         long id = pollDAO.newPoll(poll.getTitle(), poll.getDescription(), poll.getStatus(), poll.getPublicPoll(), poll.getOwner().getId());
-        poll.setId(ids++);
-        polls.put(poll.getId(),poll);
         return pollDAO.getPoll(id);
     }
 
-    @GetMapping("/{id}")
-    public Poll read(@PathVariable Long id){
-        if (!polls.containsKey(id)){
-            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public Object read(@PathVariable Long id){
+        Poll p = pollDAO.getPoll(id);
+        if(p != null){
+            return p;
         }
-        return pollDAO.getPoll(id);
+        else{
+            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
 
-    @PutMapping("/{id}")
-    public Poll update(@PathVariable Long id, @RequestBody Poll newPoll){
-        if (!polls.containsKey(id)){
-            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public Object update(@PathVariable Long id, @RequestBody Poll newPoll){
+        Poll p = pollDAO.getPoll(id);
+        if(p != null){
+            pollDAO.updateCreationTime(id, newPoll.getCreationTime());
+            pollDAO.updatePollTitle(id, newPoll.getTitle());
+            pollDAO.updatePublicPoll(id, newPoll.getPublicPoll());
+            pollDAO.updateStatus(id, newPoll.getStatus());
+            pollDAO.updateDescription(id, newPoll.getDescription());
+            return p;
         }
-        pollDAO.updateCreationTime(id, newPoll.getCreationTime());
-        pollDAO.updatePollTitle(id, newPoll.getTitle());
-        pollDAO.updatePublicPoll(id, newPoll.getPublicPoll());
-        pollDAO.updateStatus(id, newPoll.getStatus());
-        pollDAO.updateDescription(id, newPoll.getDescription());
-
-        return pollDAO.getPoll(id);
+        else{
+            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
 
-    @DeleteMapping("/{id}")
-    public List<Poll> delete(@PathVariable Long id){
-        if (!polls.containsKey(id)){
-            throw new RuntimeException(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public Object delete(@PathVariable Long id){
+        Poll p = pollDAO.getPoll(id);
+        if(p != null){
+            pollDAO.deletePoll(id);
+            return pollDAO.getAllPolls();
         }
-        pollDAO.deletePoll(id);
-        return pollDAO.getAllPolls();
+        else{
+            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+        }
     }
 
     @GetMapping

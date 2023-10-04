@@ -8,17 +8,17 @@ import no.hvl.dat250.group.project.Answer;
 import no.hvl.dat250.group.project._User;
 import no.hvl.dat250.group.project.dao.AnswerDAO;
 import no.hvl.dat250.group.project.dao.UserDAO;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@RestController
+@RequestMapping("/answers")
 public class Answer_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
-    public static final String USER_WITH_THE_ID_X_NOT_FOUND = "Answer with the id %s not found!";
-
-    public Long ids = 0L; //counter for ids, starts from 0
+    public static final String ANSWER_WITH_THE_ID_X_NOT_FOUND = "Answer with the id %s not found!";
 
     AnswerDAO answerDAO;
 
@@ -31,14 +31,53 @@ public class Answer_controller {
 
     @PostMapping
     public Answer insert(@RequestBody Answer answer){
-        long id = answerDAO.newAnswer(answer.getColor(),answer.get_user().getId(),answer.getPoll().getId(),answer.getDevice().getId());
+        Long userId = null;
+        Long deviceId = null;
+        if(answer.get_user() != null)userId = answer.get_user().getId();
+        if(answer.getDevice() != null)deviceId = answer.getDevice().getId();
+        long id = answerDAO.newAnswer(answer.getColor(),userId,answer.getPoll().getId(),deviceId);
         return answerDAO.getAnswer(id);
     }
 
-    @GetMapping("/{id}")
-    public Answer read(@PathVariable Long id){
-        return answerDAO.getAnswer(id);
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public Object read(@PathVariable Long id){
+        Answer a = answerDAO.getAnswer(id);
+        if(a!=null){
+            return a;
+        }
+        else{
+            System.out.println(ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message",ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
+
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public Object update(@PathVariable Long id, @RequestBody Answer newAnswer){
+        Answer a = answerDAO.getAnswer(id);
+        if(a!=null){
+            answerDAO.updateColor(id, newAnswer.getColor());
+            answerDAO.updateTimeOfVote(id, newAnswer.getTimeOfVote());
+            return a;
+        }
+        else{
+            System.out.println(ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
+    }
+
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public Object delete(@PathVariable Long id){
+        Answer a = answerDAO.getAnswer(id);
+        if(a!=null){
+            answerDAO.deleteAnswer(id);
+            return answerDAO.getAllAnswers();
+        }
+        else{
+            System.out.println(ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
+    }
+
     @GetMapping
     public List<Answer> getAll() {
         return answerDAO.getAllAnswers();

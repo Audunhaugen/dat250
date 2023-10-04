@@ -46,6 +46,28 @@ public class AnswerDAO {
         return a.getId();
     }
 
+    public void updateColor(Long id, int color){
+        em.getTransaction().begin();
+        Answer a = em.find(Answer.class, id);
+        a.setColor(color);
+        em.persist(a);
+        em.getTransaction().commit();
+    }
+
+    public void updateTimeOfVote(Long id, LocalDateTime newTime){
+        em.getTransaction().begin();
+        Answer a = em.find(Answer.class, id);
+        a.setTimeOfVote(newTime);
+        em.persist(a);
+        em.getTransaction().commit();
+    }
+    public void deleteAnswer(Long id){
+        em.getTransaction().begin();
+        Answer a = em.find(Answer.class, id);
+        em.remove(a);
+        em.getTransaction().commit();
+    }
+
     public Answer getAnswer(Long id){
         em.getTransaction().begin();
         Answer a = em.find(Answer.class, id);

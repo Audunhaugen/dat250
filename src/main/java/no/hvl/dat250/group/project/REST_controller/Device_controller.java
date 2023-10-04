@@ -7,6 +7,7 @@ import jakarta.persistence.Persistence;
 import no.hvl.dat250.group.project.Device;
 import no.hvl.dat250.group.project.dao.AnswerDAO;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,10 +20,6 @@ public class Device_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
 
     public static final String DEVICE_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
-
-    public Map<Long, Device> devices = new HashMap<>();
-
-    public Long ids = 0L; //counter for ids, starts from 0
 
     DeviceDAO deviceDAO;
 
@@ -39,9 +36,16 @@ public class Device_controller {
         return deviceDAO.getDevice(id);
     }
 
-    @GetMapping("/{id}")
-    public Device read(@PathVariable Long id){
-        return deviceDAO.getDevice(id);
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public Object read(@PathVariable Long id){
+        Device d = deviceDAO.getDevice(id);
+        if(d!=null){
+            return d;
+        }
+        else{
+            System.out.println(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
 
     /*@PutMapping("/{id}")
@@ -56,13 +60,17 @@ public class Device_controller {
         return device;
     }*/
 
-    @DeleteMapping("/{id}")
-    public List<Device> delete(@PathVariable Long id){
-        if (!devices.containsKey(id)){
-            throw new RuntimeException(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public Object delete(@PathVariable Long id){
+        Device d = deviceDAO.getDevice(id);
+        if(d!=null){
+            deviceDAO.deleteDevice(id);
+            return deviceDAO.getAllDevices();
         }
-        deviceDAO.deleteDevice(id);
-        return deviceDAO.getAllDevices();
+        else{
+            System.out.println(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", DEVICE_WITH_THE_ID_X_NOT_FOUND).toString();
+        }
     }
 
     @GetMapping
