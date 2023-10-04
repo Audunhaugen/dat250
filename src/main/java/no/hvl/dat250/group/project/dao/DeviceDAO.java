@@ -37,8 +37,8 @@ public class DeviceDAO {
 
     public List<Device> getAllDevices(){
         em.getTransaction().begin();
-        String query = "SELECT * FROM device";
-        Query q = em.createNativeQuery(query);
+        String query = "SELECT d from Device d";
+        Query q = em.createQuery(query, Device.class);
         em.getTransaction().commit();
         return (List<Device>) q.getResultList();
     }

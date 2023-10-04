@@ -79,8 +79,8 @@ public class PollDAO {
 
     public List<Poll> getAllPolls(){
         em.getTransaction().begin();
-        String query = "SELECT * FROM poll";
-        Query q = em.createNativeQuery(query);
+        String query = "SELECT p from Poll p";
+        Query q = em.createQuery(query, Poll.class);
         em.getTransaction().commit();
         return (List<Poll>) q.getResultList();
     }

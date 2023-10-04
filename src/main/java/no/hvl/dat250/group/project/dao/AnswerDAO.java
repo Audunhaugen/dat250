@@ -55,8 +55,8 @@ public class AnswerDAO {
 
     public List<Answer> getAllAnswers(){
         em.getTransaction().begin();
-        String query = "SELECT * FROM answer";
-        Query q = em.createNativeQuery(query);
+        String query = "SELECT a from Answer a";
+        Query q = em.createQuery(query, Answer.class);
         em.getTransaction().commit();
         return (List<Answer>) q.getResultList();
     }

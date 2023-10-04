@@ -73,8 +73,8 @@ public class UserDAO {
 
     public List<_User> getAllUsers(){
         em.getTransaction().begin();
-        String query = "SELECT * FROM _user";
-        Query q = em.createNativeQuery(query);
+        String query = "SELECT u from _User u";
+        Query q = em.createQuery(query, _User.class);
         em.getTransaction().commit();
         return (List<_User>) q.getResultList();
     }

@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import no.hvl.dat250.group.project._User;
 import no.hvl.dat250.group.project.dao.UserDAO;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,10 +19,7 @@ import java.util.Map;
 @RequestMapping("/users")
 public class _User_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
-    public static final String USER_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
-
-    public Map<Long, _User> users = new HashMap<>();
-    public Long ids = 0L; //counter for ids, starts from 0
+    public static final String USER_WITH_THE_ID_X_NOT_FOUND = "User with the id %s not found!";
 
     UserDAO userDAO;
 
@@ -35,38 +33,48 @@ public class _User_controller {
     @PostMapping
     public _User insert(@RequestBody _User user){
         long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
-        user.setId(id);
-        users.put(user.getId(),user);
         return userDAO.getUser(id);
     }
 
-    @GetMapping("/{id}")
-    public _User read(@PathVariable Long id){
-        if (!users.containsKey(id)){
-            throw new RuntimeException(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @GetMapping(value = "/{id}", produces = "application/json")
+    public Object read(@PathVariable Long id){
+        _User u = userDAO.getUser(id);
+        if(u!=null){
+            return u;
         }
-        return userDAO.getUser(id);
+        else{
+            System.out.println(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", USER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
 
-    @PutMapping("/{id}")
-    public _User update(@PathVariable Long id, @RequestBody _User newUser){
-        if (!users.containsKey(id)){
-            throw new RuntimeException(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public Object update(@PathVariable Long id, @RequestBody _User newUser){
+        _User u = userDAO.getUser(id);
+        if(u!=null){
+            userDAO.updatePassword(id, newUser.getPassword());
+            userDAO.updateUserName(id, newUser.getUserName());
+            userDAO.updateFirstName(id, newUser.getFirstName());
+            userDAO.updateLastName(id, newUser.getLastName());
+            return u;
         }
-        userDAO.updatePassword(id, newUser.getPassword());
-        userDAO.updateUserName(id, newUser.getUserName());
-        userDAO.updateFirstName(id, newUser.getFirstName());
-        userDAO.updateLastName(id, newUser.getLastName());
-        return userDAO.getUser(id);
+        else{
+            System.out.println(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", USER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
 
-    @DeleteMapping("/{id}")
-    public List<_User> delete(@PathVariable Long id){
-        if (!users.containsKey(id)){
-            throw new RuntimeException(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @DeleteMapping(value = "/{id}", produces = "application/json")
+    public Object delete(@PathVariable Long id){
+        _User u = userDAO.getUser(id);
+        if(u!=null){
+            userDAO.deleteUser(id);
+            return userDAO.getAllUsers();
         }
-        userDAO.deleteUser(id);
-        return userDAO.getAllUsers();
+        else{
+            System.out.println(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", USER_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+        }
     }
     @GetMapping
     public List<_User> getAll() {
