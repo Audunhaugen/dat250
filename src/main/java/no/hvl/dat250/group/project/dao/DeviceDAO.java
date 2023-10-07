@@ -17,6 +17,7 @@ public class DeviceDAO {
         this.em = em;
     }
     public Long newDevice(Long pollId){
+        em.getTransaction().begin();
         Device a = new Device();
 
         Poll poll = em.find(Poll.class, pollId);
@@ -24,6 +25,7 @@ public class DeviceDAO {
         poll.getDevices().add(a);
         em.persist(a);
         em.persist(poll);
+        em.getTransaction().commit();
         return a.getId();
     }
 
@@ -39,14 +41,24 @@ public class DeviceDAO {
         em.getTransaction().begin();
         String query = "SELECT d from Device d";
         Query q = em.createQuery(query, Device.class);
+        List<Device> list = (List<Device>) q.getResultList();
         em.getTransaction().commit();
-        return (List<Device>) q.getResultList();
+        return list;
     }
 
     public void deleteDevice(Long id){
         em.getTransaction().begin();
         Device a = em.find(Device.class, id);
         em.remove(a);
+        em.getTransaction().commit();
+    }
+
+    public void updateDevice(Long id, Device updatedDevice){
+        em.getTransaction().begin();
+        Device a = em.find(Device.class, id);
+        if(updatedDevice.getPoll()!=null)a.setPoll(updatedDevice.getPoll());
+        if(updatedDevice.getAnswers()!=null)a.setAnswers(updatedDevice.getAnswers());
+        em.persist(a);
         em.getTransaction().commit();
     }
 }

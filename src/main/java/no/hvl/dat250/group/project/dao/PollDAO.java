@@ -17,6 +17,7 @@ public class PollDAO {
         this.em = em;
     }
     public Long newPoll(String title, String description, Boolean status, Boolean publicPoll,Long userId){
+        em.getTransaction().begin();
        Poll a = new Poll();
        a.setTitle(title);
        a.setDescription(description);
@@ -29,46 +30,24 @@ public class PollDAO {
         user.getPolls().add(a);
         em.persist(a);
         em.persist(user);
+        em.getTransaction().commit();
         return a.getId();
     }
 
-    public void updatePollTitle(Long id, String pollTitle){
+    public void updatePoll(Long id, Poll updatedPoll){
         em.getTransaction().begin();
         Poll a = em.find(Poll.class, id);
-        a.setTitle(pollTitle);
+        if(updatedPoll.getOwner()!=null)a.setOwner(updatedPoll.getOwner());
+        if(updatedPoll.getTitle()!=null)a.setTitle(updatedPoll.getTitle());
+        if(updatedPoll.getDescription()!=null)a.setDescription(updatedPoll.getDescription());
+        if(updatedPoll.getStatus()!=null)a.setStatus(updatedPoll.getStatus());
+        if(updatedPoll.getPublicPoll()!=null)a.setPublicPoll(updatedPoll.getPublicPoll());
+        if(updatedPoll.getCreationTime()!=null)a.setCreationTime(updatedPoll.getCreationTime());
+        if(updatedPoll.getAnswers()!=null)a.setAnswers(updatedPoll.getAnswers());
+        if(updatedPoll.getDevices()!=null)a.setDevices(updatedPoll.getDevices());
         em.persist(a);
         em.getTransaction().commit();
     }
-    public void updateDescription(Long id, String description){
-        em.getTransaction().begin();
-        Poll a = em.find(Poll.class, id);
-        a.setDescription(description);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-    public void updateStatus(Long id, Boolean status){
-        em.getTransaction().begin();
-        Poll a = em.find(Poll.class, id);
-        a.setStatus(status);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-    public void updateCreationTime(Long id, LocalDateTime creationTime){
-        em.getTransaction().begin();
-        Poll a = em.find(Poll.class, id);
-        a.setCreationTime(creationTime);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-
-    public void updatePublicPoll(Long id, Boolean publicPoll){
-        em.getTransaction().begin();
-        Poll a = em.find(Poll.class, id);
-        a.setPublicPoll(publicPoll);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-
 
     public Poll getPoll(Long id){
         em.getTransaction().begin();
@@ -81,8 +60,9 @@ public class PollDAO {
         em.getTransaction().begin();
         String query = "SELECT p from Poll p";
         Query q = em.createQuery(query, Poll.class);
+        List<Poll> list = (List<Poll>) q.getResultList();
         em.getTransaction().commit();
-        return (List<Poll>) q.getResultList();
+        return list;
     }
 
     public void deletePoll(Long id){

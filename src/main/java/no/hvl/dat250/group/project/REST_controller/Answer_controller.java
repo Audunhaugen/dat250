@@ -55,9 +55,8 @@ public class Answer_controller {
     public Object update(@PathVariable Long id, @RequestBody Answer newAnswer){
         Answer a = answerDAO.getAnswer(id);
         if(a!=null){
-            answerDAO.updateColor(id, newAnswer.getColor());
-            answerDAO.updateTimeOfVote(id, newAnswer.getTimeOfVote());
-            return a;
+            answerDAO.updateAnswer(id, newAnswer);
+            return answerDAO.getAnswer(id);
         }
         else{
             System.out.println(ANSWER_WITH_THE_ID_X_NOT_FOUND.formatted(id));

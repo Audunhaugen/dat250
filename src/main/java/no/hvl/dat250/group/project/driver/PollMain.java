@@ -88,7 +88,7 @@ public class PollMain {
 
 
     Long userId = uDAO.registerUser("username", "Larry", "Wheels", "12345678");
-    uDAO.updatePassword(userId, "SecretPassword");
+    //uDAO.updatePassword(userId, "SecretPassword");
 
     Long pollId = pDAO.newPoll("DAO created Poll", "testing",true,true,userId);
     Long deviceId = dDAO.newDevice(pollId);

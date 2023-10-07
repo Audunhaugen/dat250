@@ -52,11 +52,8 @@ public class _User_controller {
     public Object update(@PathVariable Long id, @RequestBody _User newUser){
         _User u = userDAO.getUser(id);
         if(u!=null){
-            userDAO.updatePassword(id, newUser.getPassword());
-            userDAO.updateUserName(id, newUser.getUserName());
-            userDAO.updateFirstName(id, newUser.getFirstName());
-            userDAO.updateLastName(id, newUser.getLastName());
-            return u;
+            userDAO.updateUser(id, newUser);
+            return userDAO.getUser(id);
         }
         else{
             System.out.println(USER_WITH_THE_ID_X_NOT_FOUND.formatted(id));
@@ -78,6 +75,7 @@ public class _User_controller {
     }
     @GetMapping
     public List<_User> getAll() {
+        List<_User> b = userDAO.getAllUsers();
         return userDAO.getAllUsers();
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/device")
+@RequestMapping("/devices")
 public class Device_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
 
@@ -48,17 +48,18 @@ public class Device_controller {
         }
     }
 
-    /*@PutMapping("/{id}")
-    public Device update(@PathVariable Long id, @RequestBody Device newDevice){
-        if (!devices.containsKey(id)){
-            throw new RuntimeException(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public Object update(@PathVariable Long id, @RequestBody Device newDevice){
+        Device d = deviceDAO.getDevice(id);
+        if(d != null){
+            deviceDAO.updateDevice(id, newDevice);
+            return deviceDAO.getDevice(id);
         }
-        deviceDAO.
-        device.setAnswers(newDevice.getAnswers());
-        device.setPoll(newDevice.getPoll());
-
-        return device;
-    }*/
+        else{
+            System.out.println(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+        }
+    }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public Object delete(@PathVariable Long id){

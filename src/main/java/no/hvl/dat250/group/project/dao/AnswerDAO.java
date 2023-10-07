@@ -19,6 +19,7 @@ public class AnswerDAO {
         this.em = em;
     }
     public Long newAnswer(int color, Long userId, Long pollId, Long deviceId){
+        em.getTransaction().begin();
         Answer a = new Answer();
         a.setColor(color);
         a.setTimeOfVote(LocalDateTime.now());
@@ -43,24 +44,22 @@ public class AnswerDAO {
         if(userId!=null)em.persist(user);
         em.persist(poll);
         if(deviceId!=null)em.persist(device);
+        em.getTransaction().commit();
         return a.getId();
     }
 
-    public void updateColor(Long id, int color){
+    public void updateAnswer(Long id, Answer updatedAnswer){
         em.getTransaction().begin();
         Answer a = em.find(Answer.class, id);
-        a.setColor(color);
+        if(updatedAnswer.getColor()!=0)a.setColor(updatedAnswer.getColor());
+        if(updatedAnswer.getPoll()!=null)a.setPoll(updatedAnswer.getPoll());
+        if(updatedAnswer.getDevice()!=null)a.setDevice(updatedAnswer.getDevice());
+        if(updatedAnswer.getTimeOfVote()!=null)a.setTimeOfVote(updatedAnswer.getTimeOfVote());
+        if(updatedAnswer.get_user()!=null)a.set_user(updatedAnswer.get_user());
         em.persist(a);
         em.getTransaction().commit();
     }
 
-    public void updateTimeOfVote(Long id, LocalDateTime newTime){
-        em.getTransaction().begin();
-        Answer a = em.find(Answer.class, id);
-        a.setTimeOfVote(newTime);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
     public void deleteAnswer(Long id){
         em.getTransaction().begin();
         Answer a = em.find(Answer.class, id);
@@ -79,7 +78,8 @@ public class AnswerDAO {
         em.getTransaction().begin();
         String query = "SELECT a from Answer a";
         Query q = em.createQuery(query, Answer.class);
+        List<Answer> list = (List<Answer>) q.getResultList();
         em.getTransaction().commit();
-        return (List<Answer>) q.getResultList();
+        return list;
     }
 }

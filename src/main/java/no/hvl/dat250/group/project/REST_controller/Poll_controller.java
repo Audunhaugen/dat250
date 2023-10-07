@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 @RestController
-@RequestMapping("/poll")
+@RequestMapping("/polls")
 public class Poll_controller {
 
     public static final String POLL_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
@@ -52,12 +52,8 @@ public class Poll_controller {
     public Object update(@PathVariable Long id, @RequestBody Poll newPoll){
         Poll p = pollDAO.getPoll(id);
         if(p != null){
-            pollDAO.updateCreationTime(id, newPoll.getCreationTime());
-            pollDAO.updatePollTitle(id, newPoll.getTitle());
-            pollDAO.updatePublicPoll(id, newPoll.getPublicPoll());
-            pollDAO.updateStatus(id, newPoll.getStatus());
-            pollDAO.updateDescription(id, newPoll.getDescription());
-            return p;
+            pollDAO.updatePoll(id, newPoll);
+            return pollDAO.getPoll(id);
         }
         else{
             System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));

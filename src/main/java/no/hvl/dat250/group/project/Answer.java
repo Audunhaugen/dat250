@@ -1,5 +1,6 @@
 package no.hvl.dat250.group.project;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,13 +26,16 @@ public class Answer {
     @ManyToOne
     @Getter
     @Setter
+    @JsonIgnoreProperties({"polls","answers"})
     private _User _user;
     @ManyToOne
     @Getter
     @Setter
+    @JsonIgnoreProperties({"owner","answers","devices"})
     private Poll poll;
     @ManyToOne
     @Getter
     @Setter
+    @JsonIgnoreProperties({"poll","answers"})
     private Device device;
 }

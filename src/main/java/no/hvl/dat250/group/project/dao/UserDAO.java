@@ -30,34 +30,19 @@ public class UserDAO {
         return a.getId();
     }
 
-    public void updateUserName(Long id, String userName){
+    public void updateUser(Long id, _User updatedUser){
         em.getTransaction().begin();
         _User a = em.find(_User.class, id);
-        a.setUserName(userName);
+        if(updatedUser.getUserName()!=null)a.setUserName(updatedUser.getUserName());
+        if(updatedUser.getPassword()!=null)a.setPassword(updatedUser.getPassword());
+        if(updatedUser.getAnswers()!=null)a.setAnswers(updatedUser.getAnswers());
+        if(updatedUser.getPolls()!=null)a.setPolls(updatedUser.getPolls());
+        if(updatedUser.getFirstName()!=null)a.setFirstName(updatedUser.getFirstName());
+        if(updatedUser.getLastName()!=null)a.setLastName(updatedUser.getLastName());
         em.persist(a);
         em.getTransaction().commit();
     }
-    public void updateFirstName(Long id, String firstName){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        a.setFirstName(firstName);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-    public void updateLastName(Long id, String lastName){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        a.setLastName(lastName);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
-    public void updatePassword(Long id, String password){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        a.setPassword(password);
-        em.persist(a);
-        em.getTransaction().commit();
-    }
+
     public void deleteUser(Long id){
         em.getTransaction().begin();
         _User a = em.find(_User.class, id);
@@ -75,7 +60,8 @@ public class UserDAO {
         em.getTransaction().begin();
         String query = "SELECT u from _User u";
         Query q = em.createQuery(query, _User.class);
+        List<_User> list = (List<_User>) q.getResultList();
         em.getTransaction().commit();
-        return (List<_User>) q.getResultList();
+        return list;
     }
 }
