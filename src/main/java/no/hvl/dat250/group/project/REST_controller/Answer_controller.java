@@ -24,8 +24,7 @@ public class Answer_controller {
 
     @PostConstruct
     public void initialize() {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = RestServiceApplication.getEntityManager();
         answerDAO = new AnswerDAO(em);
     }
 

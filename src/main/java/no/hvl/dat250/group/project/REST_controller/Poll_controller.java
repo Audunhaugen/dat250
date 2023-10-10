@@ -25,8 +25,7 @@ public class Poll_controller {
 
     @PostConstruct
     public void initialize() {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = RestServiceApplication.getEntityManager();
         pollDAO = new PollDAO(em);
     }
 

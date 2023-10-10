@@ -10,7 +10,18 @@ import static org.hibernate.cfg.AvailableSettings.PERSISTENCE_UNIT_NAME;
 
 @SpringBootApplication
 public class RestServiceApplication {
+    private static EntityManager em;
+    static final String PERSISTENCE_UNIT_NAME = "group-project";
     public static void main(String[] args) {
+        createEntityManager();
         SpringApplication.run(RestServiceApplication.class, args);
+    }
+
+    private static void createEntityManager(){
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
+    }
+    public static EntityManager getEntityManager(){
+        return em;
     }
 }
