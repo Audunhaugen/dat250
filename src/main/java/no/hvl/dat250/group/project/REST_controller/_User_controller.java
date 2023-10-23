@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class _User_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
     public static final String USER_WITH_THE_ID_X_NOT_FOUND = "User with the id %s not found!";
