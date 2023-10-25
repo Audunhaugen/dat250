@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 @RestController
 @RequestMapping("/answers")
+@CrossOrigin(origins = "http://localhost:5173")
 public class Answer_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
     public static final String ANSWER_WITH_THE_ID_X_NOT_FOUND = "Answer with the id %s not found!";

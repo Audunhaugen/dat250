@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 @RestController
 @RequestMapping("/polls")
+@CrossOrigin(origins = "http://localhost:5173")
 public class Poll_controller {
 
     public static final String POLL_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
@@ -69,7 +70,7 @@ public class Poll_controller {
         }
         else{
             System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-            return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
         }
     }
 

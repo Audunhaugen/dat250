@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/devices")
+@CrossOrigin(origins = "http://localhost:5173")
 public class Device_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
 

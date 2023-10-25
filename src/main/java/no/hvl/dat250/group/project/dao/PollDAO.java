@@ -69,6 +69,8 @@ public class PollDAO {
         em.getTransaction().begin();
         Poll a = em.find(Poll.class, id);
         em.remove(a);
+        em.flush();
+        em.clear();
         em.getTransaction().commit();
     }
 }
