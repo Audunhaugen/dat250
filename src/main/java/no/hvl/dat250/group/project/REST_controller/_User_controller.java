@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 
 
 @RestController
@@ -30,9 +30,22 @@ public class _User_controller {
     }
 
     @PostMapping
-    public _User insert(@RequestBody _User user){
-        long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
-        return userDAO.getUser(id);
+    public Object insert(@RequestBody _User user){
+        List<_User> l = userDAO.getAllUsers();
+        boolean exists = false;
+        for(_User u : l){
+            if(Objects.equals(u.getUserName(), u.getUserName())){
+                exists=true;
+                break;
+            }
+        }
+        if(!exists){
+            long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
+            return userDAO.getUser(id);
+        }
+        else{
+            return new JSONObject().put("message", "Username already exists");
+        }
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
