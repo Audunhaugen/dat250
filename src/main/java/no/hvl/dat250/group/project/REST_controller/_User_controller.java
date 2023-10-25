@@ -30,23 +30,10 @@ public class _User_controller {
         userDAO = new UserDAO(em);
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public Object insert(@RequestBody _User user){
-        List<_User> l = userDAO.getAllUsers();
-        boolean exists = false;
-        for(_User u : l){
-            if(Objects.equals(u.getUserName(), u.getUserName())){
-                exists=true;
-                break;
-            }
-        }
-        if(!exists){
-            long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
-            return userDAO.getUser(id);
-        }
-        else{
-            return new JSONObject().put("message", "Username already exists");
-        }
+        long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
+        return userDAO.getUser(id);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
