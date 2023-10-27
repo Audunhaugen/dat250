@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.servlet.http.HttpSession;
 import no.hvl.dat250.group.project.Poll;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
 import no.hvl.dat250.group.project.dao.PollDAO;
@@ -30,52 +31,133 @@ public class Poll_controller {
         pollDAO = new PollDAO(em);
     }
 
-    @PostMapping
-    public Poll insert(@RequestBody Poll poll){
-        long id = pollDAO.newPoll(poll.getTitle(), poll.getDescription(), poll.getStatus(), poll.getPublicPoll(), poll.getOwner().getId());
-        return pollDAO.getPoll(id);
+    @PostMapping(produces = "application/json")
+    public Object insert(@RequestBody Poll poll, HttpSession session){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        };
+        if(userId == -1){
+            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+        }
+        else{
+            if(poll.getOwner().getId() == userId){
+                userId = pollDAO.newPoll(poll.getTitle(), poll.getDescription(), poll.getStatus(), poll.getPublicPoll(), poll.getOwner().getId());
+                return pollDAO.getPoll(userId);
+            }
+            else{
+                return new JSONObject().put("message","You can only make polls for you").toString();
+            }
+
+        }
+
+    }
+
+    @GetMapping(produces = "application/json")
+    public Object pollsByUser(HttpSession session){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        };
+        if(userId == -1){
+            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+        }
+        else{
+            return pollDAO.getPollsByUser(userId);
+        }
+
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public Object read(@PathVariable Long id){
-        Poll p = pollDAO.getPoll(id);
-        if(p != null){
-            return p;
+    public Object read(@PathVariable Long id, HttpSession session){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        };
+        if(userId == -1){
+            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
         }
         else{
-            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-            return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            Poll p = pollDAO.getPoll(id);
+            if(p != null){
+                if(p.getOwner().getId() == userId){
+                    return p;
+                }
+                else{
+                    return new JSONObject().put("message","You can only see your polls").toString();
+                }
+
+            }
+            else{
+                System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+                return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            }
         }
+
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
-    public Object update(@PathVariable Long id, @RequestBody Poll newPoll){
-        Poll p = pollDAO.getPoll(id);
-        if(p != null){
-            pollDAO.updatePoll(id, newPoll);
-            return pollDAO.getPoll(id);
+    public Object update(@PathVariable Long id, @RequestBody Poll newPoll, HttpSession session){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        };
+        if(userId == -1){
+            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
         }
         else{
-            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-            return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            Poll p = pollDAO.getPoll(id);
+            if(p != null){
+                if(p.getOwner().getId()==userId){
+                    pollDAO.updatePoll(id, newPoll);
+                    return pollDAO.getPoll(id);
+                }
+                else{
+                    return new JSONObject().put("message","You can only update your polls").toString();
+                }
+
+            }
+            else{
+                System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+                return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            }
         }
+
+
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    public Object delete(@PathVariable Long id){
-        Poll p = pollDAO.getPoll(id);
-        if(p != null){
-            pollDAO.deletePoll(id);
-            return pollDAO.getAllPolls();
+    public Object delete(@PathVariable Long id, HttpSession session){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        };
+        if(userId == -1){
+            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
         }
         else{
-            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-            return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            Poll p = pollDAO.getPoll(id);
+            if(p != null){
+                if(p.getOwner().getId() == userId){
+                    pollDAO.deletePoll(id);
+                    return pollDAO.getPollsByUser(userId);
+                }
+                else{
+                    return new JSONObject().put("message","You can only delete your polls").toString();
+                }
+
+            }
+            else{
+                System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+                return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+            }
         }
+
+
     }
 
-    @GetMapping
-    public List<Poll> getAll() {
-        return pollDAO.getAllPolls();
-    }
+    //@GetMapping
+    //public List<Poll> getAll() {
+        //return pollDAO.getAllPolls();
+    //}
 }

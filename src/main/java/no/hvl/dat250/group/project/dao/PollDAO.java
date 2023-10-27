@@ -65,6 +65,16 @@ public class PollDAO {
         return list;
     }
 
+    public List<Poll> getPollsByUser(long userId){
+        em.getTransaction().begin();
+        String query = "SELECT p from Poll p WHERE p.owner.id=?1";
+        Query q = em.createQuery(query, Poll.class);
+        q.setParameter(1, userId);
+        List<Poll> list = (List<Poll>) q.getResultList();
+        em.getTransaction().commit();
+        return list;
+    }
+
     public void deletePoll(Long id){
         em.getTransaction().begin();
         Poll a = em.find(Poll.class, id);

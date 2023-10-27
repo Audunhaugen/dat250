@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.servlet.http.HttpSession;
 import no.hvl.dat250.group.project._User;
 import no.hvl.dat250.group.project.dao.UserDAO;
 import org.json.JSONObject;
@@ -16,7 +17,6 @@ import java.util.Objects;
 
 
 @RestController
-@RequestMapping("/authentication")
 @CrossOrigin(origins = "http://localhost:5173")
 public class Login_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
@@ -31,7 +31,7 @@ public class Login_controller {
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public Object login(@RequestParam("username") String username, @RequestParam("password") String password){
+    public Object login(@RequestParam("username") String username, @RequestParam("password") String password, HttpSession session){
         List<_User> l = userDAO.getAllUsers();
         boolean ok = false;
         long id=-1;
@@ -40,6 +40,7 @@ public class Login_controller {
                 if(Objects.equals(u.getPassword(), password)){
                     ok=true;
                     id=u.getId();
+                    session.setAttribute("userId", id);
                 }
                 break;
             }
@@ -68,6 +69,12 @@ public class Login_controller {
         else{
             return new JSONObject().put("message", "Username already exists").toString();
         }
+    }
+
+    @GetMapping(value = "/logout", produces = "application/json")
+    public Object logout(HttpSession session){
+        session.invalidate();
+        return new JSONObject().put("message", "Succesfully logged out").toString();
     }
 }
 
