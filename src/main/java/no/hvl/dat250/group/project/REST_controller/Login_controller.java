@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpSession;
 import no.hvl.dat250.group.project._User;
 import no.hvl.dat250.group.project.dao.UserDAO;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class Login_controller {
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public Object login(@RequestParam("username") String username, @RequestParam("password") String password, HttpSession session){
+    public ResponseEntity login(@RequestParam("username") String username, @RequestParam("password") String password, HttpSession session){
         List<_User> l = userDAO.getAllUsers();
         boolean ok = false;
         long id=-1;
@@ -46,14 +48,14 @@ public class Login_controller {
             }
         }
         if(ok){
-            return userDAO.getUser(id);
+            return new ResponseEntity<>(userDAO.getUser(id), HttpStatus.OK);
         }
         else{
-            return new JSONObject().put("message", "Incorrect password").toString();
+            return new ResponseEntity<>(new JSONObject().put("message", "Incorrect password").toString(), HttpStatus.UNAUTHORIZED);
         }
     }
     @PostMapping(value = "/signup", produces = "application/json")
-    public Object signup(@RequestBody _User user){
+    public ResponseEntity signup(@RequestBody _User user){
         List<_User> l = userDAO.getAllUsers();
         boolean exists = false;
         for(_User u : l){
@@ -64,17 +66,17 @@ public class Login_controller {
         }
         if(!exists){
             long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
-            return userDAO.getUser(id);
+            return new ResponseEntity<>(userDAO.getUser(id), HttpStatus.OK);
         }
         else{
-            return new JSONObject().put("message", "Username already exists").toString();
+            return new ResponseEntity<>(new JSONObject().put("message", "Username already exists").toString(), HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping(value = "/logout", produces = "application/json")
-    public Object logout(HttpSession session){
+    public ResponseEntity logout(HttpSession session){
         session.invalidate();
-        return new JSONObject().put("message", "Succesfully logged out").toString();
+        return new ResponseEntity<>(new JSONObject().put("message", "Succesfully logged out").toString(), HttpStatus.OK);
     }
 }
 

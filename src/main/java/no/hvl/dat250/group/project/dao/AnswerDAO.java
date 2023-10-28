@@ -74,6 +74,16 @@ public class AnswerDAO {
         return a;
     }
 
+    public List<Answer> getAnswersByPoll(long pollId){
+        em.getTransaction().begin();
+        String query = "SELECT a from Answer a WHERE a.poll.id=?1";
+        Query q = em.createQuery(query, Answer.class);
+        q.setParameter(1, pollId);
+        List<Answer> list = (List<Answer>) q.getResultList();
+        em.getTransaction().commit();
+        return list;
+    }
+
     public List<Answer> getAllAnswers(){
         em.getTransaction().begin();
         String query = "SELECT a from Answer a";

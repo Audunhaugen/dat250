@@ -11,6 +11,8 @@ import no.hvl.dat250.group.project.dao.AnswerDAO;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
 import no.hvl.dat250.group.project.dao.PollDAO;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -39,13 +41,13 @@ public class Linking_controller {
         pollDao = new PollDAO(em);
     }
     @GetMapping(value = "/link", produces = "application/json")
-    public Object createLink(@RequestParam("pollId") long pollId, HttpSession session){
+    public ResponseEntity createLink(@RequestParam("pollId") long pollId, HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
             Poll p = pollDao.getPoll(pollId);
@@ -58,35 +60,35 @@ public class Linking_controller {
                 codes.put(code, pollId);
                 int finalCode = code;
                 runTimer(finalCode);
-                return new JSONObject().put("message", "Code generated: "+code).toString();
+                return new ResponseEntity<>(new JSONObject().put("message", "Code generated: "+code).toString(), HttpStatus.OK);
             }
             else{
-                return new JSONObject().put("message", "You can only link you own polls").toString();
+                return new ResponseEntity<>(new JSONObject().put("message", "You can only link you own polls").toString(), HttpStatus.UNAUTHORIZED);
             }
 
         }
 
     }
     @PostMapping(value = "/link", produces = "application/json")
-    public Object link(@RequestParam("code") int code){
+    public ResponseEntity link(@RequestParam("code") int code){
         if(codes.containsKey(code)){
             long id = deviceDAO.newDevice(codes.get(code));
-            return deviceDAO.getDevice(id);
+            return new ResponseEntity<>(deviceDAO.getDevice(id), HttpStatus.OK);
         }
         else{
-            return new JSONObject().put("message", "There is no poll with that code waiting to be linked").toString();
+            return new ResponseEntity<>(new JSONObject().put("message", "There is no poll with that code waiting to be linked").toString(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping(value = "/delink/{id}", produces = "application/json")
-    public Object delink(@PathVariable("id") long id){
+    public ResponseEntity delink(@PathVariable("id") long id){
         Device d = deviceDAO.getDevice(id);
         if(d!=null){
             deviceDAO.deleteDevice(id);
-            return deviceDAO.getAllDevices();
+            return new ResponseEntity<>(deviceDAO.getAllDevices(), HttpStatus.OK);
         }
         else{
-            return new JSONObject().put("message", "There is no device with that id").toString();
+            return new ResponseEntity<>(new JSONObject().put("message", "There is no device with that id").toString(), HttpStatus.NOT_FOUND);
         }
     }
 

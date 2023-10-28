@@ -9,6 +9,8 @@ import no.hvl.dat250.group.project.Poll;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
 import no.hvl.dat250.group.project.dao.PollDAO;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -32,21 +34,21 @@ public class Poll_controller {
     }
 
     @PostMapping(produces = "application/json")
-    public Object insert(@RequestBody Poll poll, HttpSession session){
+    public ResponseEntity insert(@RequestBody Poll poll, HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
             if(poll.getOwner().getId() == userId){
                 userId = pollDAO.newPoll(poll.getTitle(), poll.getDescription(), poll.getStatus(), poll.getPublicPoll(), poll.getOwner().getId());
-                return pollDAO.getPoll(userId);
+                return new ResponseEntity<>(pollDAO.getPoll(userId), HttpStatus.OK);
             }
             else{
-                return new JSONObject().put("message","You can only make polls for you").toString();
+                return new ResponseEntity<>(new JSONObject().put("message","You can only make polls for you").toString(), HttpStatus.UNAUTHORIZED);
             }
 
         }
@@ -54,72 +56,72 @@ public class Poll_controller {
     }
 
     @GetMapping(produces = "application/json")
-    public Object pollsByUser(HttpSession session){
+    public ResponseEntity pollsByUser(HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
-            return pollDAO.getPollsByUser(userId);
+            return new ResponseEntity<>(pollDAO.getPollsByUser(userId), HttpStatus.OK);
         }
 
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public Object read(@PathVariable Long id, HttpSession session){
+    public ResponseEntity read(@PathVariable Long id, HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
             Poll p = pollDAO.getPoll(id);
             if(p != null){
                 if(p.getOwner().getId() == userId){
-                    return p;
+                    return new ResponseEntity<>(p, HttpStatus.OK);
                 }
                 else{
-                    return new JSONObject().put("message","You can only see your polls").toString();
+                    return new ResponseEntity<>(new JSONObject().put("message","You can only see your polls").toString(), HttpStatus.UNAUTHORIZED);
                 }
 
             }
             else{
                 System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-                return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+                return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
             }
         }
 
     }
 
     @PutMapping(value = "/{id}", produces = "application/json")
-    public Object update(@PathVariable Long id, @RequestBody Poll newPoll, HttpSession session){
+    public ResponseEntity update(@PathVariable Long id, @RequestBody Poll newPoll, HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
             Poll p = pollDAO.getPoll(id);
             if(p != null){
                 if(p.getOwner().getId()==userId){
                     pollDAO.updatePoll(id, newPoll);
-                    return pollDAO.getPoll(id);
+                    return new ResponseEntity<>(pollDAO.getPoll(id), HttpStatus.OK);
                 }
                 else{
-                    return new JSONObject().put("message","You can only update your polls").toString();
+                    return new ResponseEntity<>(new JSONObject().put("message","You can only update your polls").toString(), HttpStatus.UNAUTHORIZED);
                 }
 
             }
             else{
                 System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-                return new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+                return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
             }
         }
 
@@ -127,29 +129,29 @@ public class Poll_controller {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
-    public Object delete(@PathVariable Long id, HttpSession session){
+    public ResponseEntity delete(@PathVariable Long id, HttpSession session){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
         };
         if(userId == -1){
-            return new JSONObject().put("message","You have to log in first at http://localhost:8080").toString();
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
             Poll p = pollDAO.getPoll(id);
             if(p != null){
                 if(p.getOwner().getId() == userId){
                     pollDAO.deletePoll(id);
-                    return pollDAO.getPollsByUser(userId);
+                    return new ResponseEntity<>(pollDAO.getPollsByUser(userId), HttpStatus.OK);
                 }
                 else{
-                    return new JSONObject().put("message","You can only delete your polls").toString();
+                    return new ResponseEntity<>(new JSONObject().put("message","You can only delete your polls").toString(), HttpStatus.UNAUTHORIZED);
                 }
 
             }
             else{
                 System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-                return new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString();
+                return new ResponseEntity<>(new JSONObject().put("message", POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
             }
         }
 
