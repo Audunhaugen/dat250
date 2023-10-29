@@ -54,13 +54,13 @@ public class Linking_controller {
             if(p.getOwner().getId() == userId){
                 int code=-1;
                 while(true){
-                    code = RandomGenerator.getDefault().nextInt(10000);
+                    code = RandomGenerator.getDefault().nextInt(9999);
                     if(!codes.containsKey(code))break;
                 }
                 codes.put(code, pollId);
                 int finalCode = code;
                 runTimer(finalCode);
-                return new ResponseEntity<>(new JSONObject().put("message", "Code generated: "+code).toString(), HttpStatus.OK);
+                return new ResponseEntity<>(new JSONObject().put("message", "Code generated: "+String.format("%04d", code)).toString(), HttpStatus.OK);
             }
             else{
                 return new ResponseEntity<>(new JSONObject().put("message", "You can only link you own polls").toString(), HttpStatus.UNAUTHORIZED);
