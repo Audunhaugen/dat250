@@ -14,38 +14,66 @@ public class UserDAO {
         this.em = em;
     }
     public Long registerUser(String userName, String firstName, String lastName, String password){
-        em.getTransaction().begin();
-        _User a = new _User();
-        a.setUserName(userName);
-        a.setFirstName(firstName);
-        a.setLastName(lastName);
-        a.setPassword(password);
+        EntityTransaction transaction = em.getTransaction();
+        try{
+            transaction.begin();
+            _User a = new _User();
+            a.setUserName(userName);
+            a.setFirstName(firstName);
+            a.setLastName(lastName);
+            a.setPassword(password);
 
 
-        em.persist(a);
-        em.getTransaction().commit();
+            em.persist(a);
+            em.getTransaction().commit();
 
-        return a.getId();
+            return a.getId();
+        } catch (HibernateException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw e;
+        }
+
     }
 
     public void updateUser(Long id, _User updatedUser){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        if(updatedUser.getUserName()!=null)a.setUserName(updatedUser.getUserName());
-        if(updatedUser.getPassword()!=null)a.setPassword(updatedUser.getPassword());
-        if(updatedUser.getAnswers()!=null)a.setAnswers(updatedUser.getAnswers());
-        if(updatedUser.getPolls()!=null)a.setPolls(updatedUser.getPolls());
-        if(updatedUser.getFirstName()!=null)a.setFirstName(updatedUser.getFirstName());
-        if(updatedUser.getLastName()!=null)a.setLastName(updatedUser.getLastName());
-        em.persist(a);
-        em.getTransaction().commit();
+        EntityTransaction transaction = em.getTransaction();
+        try{
+            transaction.begin();
+            _User a = em.find(_User.class, id);
+            if(updatedUser.getUserName()!=null)a.setUserName(updatedUser.getUserName());
+            if(updatedUser.getPassword()!=null)a.setPassword(updatedUser.getPassword());
+            if(updatedUser.getAnswers()!=null)a.setAnswers(updatedUser.getAnswers());
+            if(updatedUser.getPolls()!=null)a.setPolls(updatedUser.getPolls());
+            if(updatedUser.getFirstName()!=null)a.setFirstName(updatedUser.getFirstName());
+            if(updatedUser.getLastName()!=null)a.setLastName(updatedUser.getLastName());
+            em.persist(a);
+            em.getTransaction().commit();
+        } catch (HibernateException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw e;
+        }
+
+
     }
 
     public void deleteUser(Long id){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        em.remove(a);
-        em.getTransaction().commit();
+        EntityTransaction transaction = em.getTransaction();
+        try{
+            transaction.begin();
+            _User a = em.find(_User.class, id);
+            em.remove(a);
+            em.getTransaction().commit();
+        } catch (HibernateException e) {
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw e;
+        }
+
     }
     public _User getUser(Long id){
         EntityTransaction transaction = em.getTransaction();
@@ -63,11 +91,20 @@ public class UserDAO {
     }
 
     public List<_User> getAllUsers(){
-        em.getTransaction().begin();
-        String query = "SELECT u from _User u";
-        Query q = em.createQuery(query, _User.class);
-        List<_User> list = (List<_User>) q.getResultList();
-        em.getTransaction().commit();
-        return list;
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            String query = "SELECT u from _User u";
+            Query q = em.createQuery(query, _User.class);
+            List<_User> list = (List<_User>) q.getResultList();
+            em.getTransaction().commit();
+            return list;
+        } catch (HibernateException e) {
+            if(transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+
     }
 }
