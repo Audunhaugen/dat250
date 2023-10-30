@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class _User_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
     public static final String USER_WITH_THE_ID_X_NOT_FOUND = "User with the id %s not found!";
@@ -44,6 +44,7 @@ public class _User_controller {
         long userId = -1;
         if(session.getAttribute("userId") != null){
             userId = (long) session.getAttribute("userId");
+            System.out.println("User ID " + userId);
         }
         if(userId == -1){
             return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);

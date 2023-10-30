@@ -19,7 +19,7 @@ import java.util.Objects;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class Login_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
     public static final String USER_WITH_THE_ID_X_NOT_FOUND = "User with the id %s not found!";
@@ -38,7 +38,7 @@ public class Login_controller {
         boolean ok = false;
         long id=-1;
         for(_User u : l){
-            if(Objects.equals(u.getUserName(), u.getUserName())){
+            if(Objects.equals(u.getUserName(), username)){
                 if(Objects.equals(u.getPassword(), password)){
                     ok=true;
                     id=u.getId();
@@ -54,12 +54,13 @@ public class Login_controller {
             return new ResponseEntity<>(new JSONObject().put("message", "Incorrect password").toString(), HttpStatus.UNAUTHORIZED);
         }
     }
+
     @PostMapping(value = "/signup", produces = "application/json")
     public ResponseEntity signup(@RequestBody _User user){
         List<_User> l = userDAO.getAllUsers();
         boolean exists = false;
         for(_User u : l){
-            if(Objects.equals(u.getUserName(), u.getUserName())){
+            if(Objects.equals(u.getUserName(), user.getUserName())){
                 exists=true;
                 break;
             }

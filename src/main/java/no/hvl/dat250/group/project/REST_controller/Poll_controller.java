@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 @RestController
 @RequestMapping("/polls")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class Poll_controller {
 
     public static final String POLL_WITH_THE_ID_X_NOT_FOUND = "Poll with the id %s not found!";
@@ -43,6 +43,7 @@ public class Poll_controller {
             return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
         }
         else{
+            System.out.println("Owner: " + poll.getOwner().getId() + " User: " + userId);
             if(poll.getOwner().getId() == userId){
                 userId = pollDAO.newPoll(poll.getTitle(), poll.getDescription(), poll.getStatus(), poll.getPublicPoll(), poll.getOwner().getId());
                 return new ResponseEntity<>(pollDAO.getPoll(userId), HttpStatus.OK);

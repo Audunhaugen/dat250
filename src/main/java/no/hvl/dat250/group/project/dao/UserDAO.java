@@ -1,11 +1,9 @@
 package no.hvl.dat250.group.project.dao;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
+import jakarta.persistence.*;
 import no.hvl.dat250.group.project._User;
 import org.h2.engine.User;
+import org.hibernate.HibernateException;
 
 import java.util.List;
 
@@ -50,10 +48,18 @@ public class UserDAO {
         em.getTransaction().commit();
     }
     public _User getUser(Long id){
-        em.getTransaction().begin();
-        _User a = em.find(_User.class, id);
-        em.getTransaction().commit();
-        return a;
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            _User a = em.find(_User.class, id);
+            em.getTransaction().commit();
+            return a;
+        } catch (HibernateException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw e;
+        }
     }
 
     public List<_User> getAllUsers(){
