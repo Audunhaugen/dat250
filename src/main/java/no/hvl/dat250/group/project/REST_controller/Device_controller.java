@@ -2,19 +2,12 @@ package no.hvl.dat250.group.project.REST_controller;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import no.hvl.dat250.group.project.Device;
-import no.hvl.dat250.group.project.dao.AnswerDAO;
 import no.hvl.dat250.group.project.dao.DeviceDAO;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/devices")
