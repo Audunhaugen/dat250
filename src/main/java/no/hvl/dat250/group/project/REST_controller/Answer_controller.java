@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/answers")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @Controller
 public class Answer_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
@@ -134,8 +134,8 @@ public class Answer_controller {
         }
     }*/
 
-    @GetMapping
+    /*@GetMapping
     public ResponseEntity getAll() {
         return new ResponseEntity<>(answerDAO.getAllAnswers(), HttpStatus.OK);
-    }
+    }*/
 }
