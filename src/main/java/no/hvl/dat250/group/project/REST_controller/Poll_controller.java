@@ -118,6 +118,21 @@ public class Poll_controller {
 
     }
 
+
+    @GetMapping(value = "/vote/{id}", produces = "application/json")
+    public ResponseEntity readForVoting(@PathVariable Long id){
+        Poll p = pollDAO.getPoll(id);
+        if(p != null){
+            return new ResponseEntity<>(p, HttpStatus.OK);
+
+        }
+        else{
+            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+            return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity update(@PathVariable Long id, @RequestBody Poll newPoll, HttpSession session){
         long userId = -1;
