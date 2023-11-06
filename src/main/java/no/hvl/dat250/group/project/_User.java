@@ -30,7 +30,6 @@ public class _User {
 
     @Getter
     @Setter
-    @JsonIgnore
     private String password;
 
     @Getter

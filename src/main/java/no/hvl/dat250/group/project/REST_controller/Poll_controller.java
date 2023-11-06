@@ -22,6 +22,9 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.Thread.sleep;
+
 @RestController
 @RequestMapping("/polls")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
@@ -32,6 +35,7 @@ public class Poll_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
 
     PollDAO pollDAO;
+    HashMap<String, Long> links = new HashMap<>();
 
     @PostConstruct
     public void initialize() {
@@ -132,6 +136,35 @@ public class Poll_controller {
         }
 
     }
+    @GetMapping(value = "/share/{id}", produces = "application/json")
+    public ResponseEntity sharePoll(@PathVariable Long id, @RequestParam("time") int time, HttpSession session ){
+        long userId = -1;
+        if(session.getAttribute("userId")!=null){
+            userId = (long) session.getAttribute("userId");
+        }
+        if(userId == -1){
+            return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
+        }
+        else{
+            Poll p = pollDAO.getPoll(id);
+            if(p != null){
+                if(p.getOwner().getId() == userId){
+                    String link = getAlphaNumericString(10);
+                    links.put(link, p.getId());
+                    runTimer(link, time);
+                    return new ResponseEntity<>(p, HttpStatus.OK);
+                }
+                else{
+                    return new ResponseEntity<>(new JSONObject().put("message","You can only share your polls").toString(), HttpStatus.UNAUTHORIZED);
+                }
+
+            }
+            else{
+                System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
+                return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
+            }
+        }
+    }
 
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity update(@PathVariable Long id, @RequestBody Poll newPoll, HttpSession session){
@@ -222,6 +255,52 @@ public class Poll_controller {
 
 
     }
+
+
+    private String getAlphaNumericString(int n)
+    {
+
+        // choose a Character random from this String
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        // create StringBuffer size of AlphaNumericString
+        StringBuilder sb = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            int index
+                    = (int)(AlphaNumericString.length()
+                    * Math.random());
+
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+
+        return sb.toString();
+    }
+
+    public void runTimer(String link, int time){
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sleep(time*60*60*1000);
+                    links.remove(link);
+                    System.out.println("link removed "+link);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
+        t1.start();
+    }
+
 
     //@GetMapping
     //public List<Poll> getAll() {
