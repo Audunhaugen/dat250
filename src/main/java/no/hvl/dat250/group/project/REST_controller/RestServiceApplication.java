@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableMongoRepositories
 public class RestServiceApplication {
     private static EntityManager em;
     static final String PERSISTENCE_UNIT_NAME = "group-project";

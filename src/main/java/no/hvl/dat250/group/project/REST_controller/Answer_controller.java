@@ -46,6 +46,9 @@ public class Answer_controller {
         if(answer.getDevice() != null)deviceId = answer.getDevice().getId();
         if(answer.get_user() != null)userId = answer.get_user().getId();
         Poll p = pollDAO.getPoll(answer.getPoll().getId());
+        if(!p.getStatus()){
+            return new ResponseEntity<>(new JSONObject().put("message","Closed poll").toString(), HttpStatus.LOCKED);
+        }
         if(!p.getPublicPoll()){
             long sessionUserId = -1;
             if(session.getAttribute("userId")!=null){
@@ -60,8 +63,8 @@ public class Answer_controller {
                 }
                 else{
                     long id = answerDAO.newAnswer(answer.getColor(),userId,answer.getPoll().getId(),null);
-                    registerInMongo(answer);
                     sender.sendMessage(answer);
+                    registerInMongo(answer);
                     return new ResponseEntity<>(answerDAO.getAnswer(id), HttpStatus.OK);
                 }
 
@@ -69,28 +72,13 @@ public class Answer_controller {
         }
         else{
             long id = answerDAO.newAnswer(answer.getColor(),userId,answer.getPoll().getId(),deviceId);
-            registerInMongo(answer);
             sender.sendMessage(answer);
+            registerInMongo(answer);
             return new ResponseEntity<>(answerDAO.getAnswer(id), HttpStatus.OK);
         }
 
     }
 
-    private void registerInMongo(Answer answer){
-        Optional<PollMongo> pm = pollRepository.findById(String.valueOf(answer.getPoll().getId()));
-        if(pm.isPresent()){
-            PollMongo z = pm.get();
-            if(answer.getColor() == 1) z.setNumberOfGreenAnswers(z.getNumberOfGreenAnswers()+1);
-            else if(answer.getColor() == 2) z.setNumberOfRedAnswers(z.getNumberOfRedAnswers()+1);
-            pollRepository.save(z);
-        }
-        else{
-            PollMongo z = null;
-            if(answer.getColor() == 1) z = new PollMongo(String.valueOf(answer.getPoll().getId()),1,0);
-            else if(answer.getColor() == 2) z = new PollMongo(String.valueOf(answer.getPoll().getId()), 0,1);
-            if(z != null)pollRepository.save(z);
-        }
-    }
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity read(@PathVariable Long id){
         Answer a = answerDAO.getAnswer(id);
@@ -138,4 +126,20 @@ public class Answer_controller {
     public ResponseEntity getAll() {
         return new ResponseEntity<>(answerDAO.getAllAnswers(), HttpStatus.OK);
     }*/
+
+    public void registerInMongo(Answer answer){
+        Optional<PollMongo> pm = pollRepository.findById(String.valueOf(answer.getPoll().getId()));
+        if(pm.isPresent()){
+            PollMongo z = pm.get();
+            if(answer.getColor() == 1) z.setNumberOfGreenAnswers(z.getNumberOfGreenAnswers()+1);
+            else if(answer.getColor() == 2) z.setNumberOfRedAnswers(z.getNumberOfRedAnswers()+1);
+            pollRepository.save(z);
+        }
+        else{
+            PollMongo z = null;
+            if(answer.getColor() == 1) z = new PollMongo(String.valueOf(answer.getPoll().getId()),1,0);
+            else if(answer.getColor() == 2) z = new PollMongo(String.valueOf(answer.getPoll().getId()), 0,1);
+            if(z != null)pollRepository.save(z);
+        }
+    }
 }

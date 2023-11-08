@@ -41,7 +41,7 @@ public class Poll {
     @ManyToOne
     @Getter
     @Setter
-    @JsonIgnoreProperties({"polls","answers"})
+    @JsonIgnoreProperties({"polls","answers","password"})
     private _User owner;
 
     @OneToMany(mappedBy = "poll")

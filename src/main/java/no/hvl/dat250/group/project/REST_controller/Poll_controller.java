@@ -123,21 +123,28 @@ public class Poll_controller {
     }
 
 
-    @GetMapping(value = "/vote/{id}", produces = "application/json")
-    public ResponseEntity readForVoting(@PathVariable Long id){
-        Poll p = pollDAO.getPoll(id);
-        if(p != null){
-            return new ResponseEntity<>(p, HttpStatus.OK);
+    @GetMapping(value = "/vote/{link}", produces = "application/json")
+    public ResponseEntity readForVoting(@PathVariable String link){
+        if(links.containsKey(link)){
+            long pId = links.get(link);
+            Poll p = pollDAO.getPoll(pId);
+            if(p != null){
+                return new ResponseEntity<>(p, HttpStatus.OK);
 
+            }
+            else{
+                System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(pId));
+                return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(pId)).toString(), HttpStatus.NOT_FOUND);
+            }
         }
         else{
-            System.out.println(POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id));
-            return new ResponseEntity<>(new JSONObject().put("message",POLL_WITH_THE_ID_X_NOT_FOUND.formatted(id)).toString(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new JSONObject().put("message","Invalid link").toString(), HttpStatus.NOT_FOUND);
         }
+
 
     }
     @GetMapping(value = "/share/{id}", produces = "application/json")
-    public ResponseEntity sharePoll(@PathVariable Long id, @RequestParam("time") int time, HttpSession session ){
+    public ResponseEntity sharePoll(@PathVariable Long id, HttpSession session ){
         long userId = -1;
         if(session.getAttribute("userId")!=null){
             userId = (long) session.getAttribute("userId");
@@ -151,8 +158,10 @@ public class Poll_controller {
                 if(p.getOwner().getId() == userId){
                     String link = getAlphaNumericString(10);
                     links.put(link, p.getId());
-                    runTimer(link, time);
-                    return new ResponseEntity<>(p, HttpStatus.OK);
+                    runTimer(link);
+                    JSONObject o = new JSONObject();
+                    o.put("link", link);
+                    return new ResponseEntity<>(o.toString(), HttpStatus.OK);
                 }
                 else{
                     return new ResponseEntity<>(new JSONObject().put("message","You can only share your polls").toString(), HttpStatus.UNAUTHORIZED);
@@ -284,12 +293,12 @@ public class Poll_controller {
         return sb.toString();
     }
 
-    public void runTimer(String link, int time){
+    public void runTimer(String link){
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    sleep(time*60*60*1000);
+                    sleep(1*60*60*1000);
                     links.remove(link);
                     System.out.println("link removed "+link);
                 } catch (InterruptedException e) {

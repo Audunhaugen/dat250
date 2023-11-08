@@ -27,7 +27,7 @@ public class Answer {
     @ManyToOne
     @Getter
     @Setter
-    @JsonIgnoreProperties({"polls","answers"})
+    @JsonIgnoreProperties({"polls","answers","password"})
     private _User _user;
     @ManyToOne
     @Getter
