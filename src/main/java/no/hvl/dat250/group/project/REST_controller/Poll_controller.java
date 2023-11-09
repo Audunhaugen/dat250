@@ -122,7 +122,6 @@ public class Poll_controller {
 
     }
 
-
     @GetMapping(value = "/vote/{link}", produces = "application/json")
     public ResponseEntity readForVoting(@PathVariable String link){
         if(links.containsKey(link)){

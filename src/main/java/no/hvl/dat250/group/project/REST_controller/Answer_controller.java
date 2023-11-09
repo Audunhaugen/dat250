@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -94,6 +95,21 @@ public class Answer_controller {
     @GetMapping(produces = "application/json")
     public Object getAnswersByPoll(@RequestParam("pollId") long pollId){
         return new ResponseEntity<>(answerDAO.getAnswersByPoll(pollId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/number", produces = "application/json")
+    public ResponseEntity getNumberOfAnswersByPoll(@RequestParam("pollId") String pollId){
+        List<Answer> answers = answerDAO.getAnswersByPoll(Long.parseLong(pollId));
+        int ng = 0;
+        int nr = 0;
+        for(Answer a: answers){
+            if(a.getColor() == 1)ng++;
+            else if(a.getColor()==2)nr++;
+        }
+        JSONObject o = new JSONObject();
+        o.put("ng",ng);
+        o.put("nr",nr);
+        return new ResponseEntity<>(o.toString(), HttpStatus.OK);
     }
 
     /*@PutMapping(value = "/{id}", produces = "application/json")
