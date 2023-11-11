@@ -25,11 +25,11 @@ public class Device_controller {
         deviceDAO = new DeviceDAO(em);
     }
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity insert(@RequestBody Device device){
         long id = deviceDAO.newDevice(device.getPoll().getId());
         return new ResponseEntity<>(deviceDAO.getDevice(id), HttpStatus.OK);
-    }
+    }*/
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity read(@PathVariable Long id){
@@ -43,7 +43,7 @@ public class Device_controller {
         }
     }
 
-    @PutMapping(value = "/{id}", produces = "application/json")
+    /*@PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity update(@PathVariable Long id, @RequestBody Device newDevice){
         Device d = deviceDAO.getDevice(id);
         if(d != null){
@@ -54,7 +54,7 @@ public class Device_controller {
             System.out.println(DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id));
             return new ResponseEntity<>(new JSONObject().put("message", DEVICE_WITH_THE_ID_X_NOT_FOUND.formatted(id)), HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity delete(@PathVariable Long id){

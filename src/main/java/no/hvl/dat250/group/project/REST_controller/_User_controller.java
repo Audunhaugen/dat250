@@ -33,11 +33,11 @@ public class _User_controller {
         userDAO = new UserDAO(em);
     }
 
-    @PostMapping(produces = "application/json")
+    /*@PostMapping(produces = "application/json")
     public ResponseEntity insert(@RequestBody _User user){
         long id = userDAO.registerUser(user.getUserName(), user.getFirstName(), user.getLastName(), user.getPassword());
         return new ResponseEntity<>(userDAO.getUser(id), HttpStatus.OK);
-    }
+    }*/
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity read(@PathVariable Long id, HttpSession session){
@@ -121,9 +121,9 @@ public class _User_controller {
             }
         }
     }
-    @GetMapping
+    /*@GetMapping
     public ResponseEntity getAll() {
         List<_User> b = userDAO.getAllUsers();
         return new ResponseEntity<>(userDAO.getAllUsers(), HttpStatus.OK);
-    }
+    }*/
 }

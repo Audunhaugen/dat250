@@ -58,7 +58,7 @@ public class Linking_controller {
                 return new ResponseEntity<>(new JSONObject().put("message", "Code generated: "+String.format("%04d", code)).toString(), HttpStatus.OK);
             }
             else{
-                return new ResponseEntity<>(new JSONObject().put("message", "You can only link you own polls").toString(), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(new JSONObject().put("message", "You can only link your own polls").toString(), HttpStatus.UNAUTHORIZED);
             }
 
         }

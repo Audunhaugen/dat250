@@ -47,6 +47,9 @@ public class Answer_controller {
         if(answer.getDevice() != null)deviceId = answer.getDevice().getId();
         if(answer.get_user() != null)userId = answer.get_user().getId();
         Poll p = pollDAO.getPoll(answer.getPoll().getId());
+        if(p == null){
+            return new ResponseEntity<>(new JSONObject().put("message", "Poll with id "+answer.getPoll().getId()+" not found").toString(), HttpStatus.NOT_FOUND);
+        }
         if(!p.getStatus()){
             return new ResponseEntity<>(new JSONObject().put("message","Closed poll").toString(), HttpStatus.LOCKED);
         }
@@ -59,6 +62,7 @@ public class Answer_controller {
                 return new ResponseEntity<>(new JSONObject().put("message","You have to log in first at http://localhost:8080").toString(), HttpStatus.UNAUTHORIZED);
             }
             else{
+                if(userId == null) return new ResponseEntity<>(new JSONObject().put("message", "You have to send you id").toString(), HttpStatus.CONFLICT);
                 if(userId != sessionUserId){
                     return new ResponseEntity<>(new JSONObject().put("message","You can only answer for yourself").toString(), HttpStatus.UNAUTHORIZED);
                 }
@@ -93,7 +97,7 @@ public class Answer_controller {
     }
 
     @GetMapping(produces = "application/json")
-    public Object getAnswersByPoll(@RequestParam("pollId") long pollId){
+    public ResponseEntity getAnswersByPoll(@RequestParam("pollId") long pollId){
         return new ResponseEntity<>(answerDAO.getAnswersByPoll(pollId), HttpStatus.OK);
     }
 
