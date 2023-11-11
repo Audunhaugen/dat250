@@ -204,8 +204,8 @@ public class Poll_controller {
 
     }
 
-    @GetMapping(value = "{id}/close", produces = "application/json")
-    public ResponseEntity closePoll(@PathVariable Long id, HttpSession session) throws URISyntaxException, IOException, InterruptedException {
+    @GetMapping(value = "{id}/openclose", produces = "application/json")
+    public ResponseEntity openClosePoll(@PathVariable Long id, HttpSession session) throws URISyntaxException, IOException, InterruptedException {
         long userId = -1;
         if(session.getAttribute("userId") != null){
             userId = (long) session.getAttribute("userId");
@@ -217,7 +217,7 @@ public class Poll_controller {
             Poll p = pollDAO.getPoll(id);
             if(p != null){
                 if(p.getOwner().getId() == userId){
-                    p.setStatus(false);
+                    p.setStatus(!p.getStatus());
                     pollDAO.updatePoll(id, p);
                     publishToDweet(p.getTitle(), false);
                     return new ResponseEntity<>(pollDAO.getPoll(id), HttpStatus.OK);

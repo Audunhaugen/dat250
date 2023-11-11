@@ -69,7 +69,10 @@ public class AnswerDAO {
             transaction.begin();
             Answer a = em.find(Answer.class, id);
             if(updatedAnswer.getColor()!=0)a.setColor(updatedAnswer.getColor());
-            if(updatedAnswer.getPoll()!=null)a.setPoll(updatedAnswer.getPoll());
+            if(updatedAnswer.getPoll()!=null){//solve this by obtaining poll from em and updating with that and poll with answer
+                a.setPoll(updatedAnswer.getPoll());
+
+            }
             if(updatedAnswer.getDevice()!=null)a.setDevice(updatedAnswer.getDevice());
             if(updatedAnswer.getTimeOfVote()!=null)a.setTimeOfVote(updatedAnswer.getTimeOfVote());
             if(updatedAnswer.get_user()!=null)a.set_user(updatedAnswer.get_user());

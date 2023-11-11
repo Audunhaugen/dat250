@@ -60,6 +60,27 @@ public class UserDAO {
 
     }
 
+    public void updateUserData(Long id, _User updatedUser){
+        EntityTransaction transaction = em.getTransaction();
+        try{
+            transaction.begin();
+            _User a = em.find(_User.class, id);
+            if(updatedUser.getUserName()!=null)a.setUserName(updatedUser.getUserName());
+            if(updatedUser.getPassword()!=null)a.setPassword(updatedUser.getPassword());
+            if(updatedUser.getFirstName()!=null)a.setFirstName(updatedUser.getFirstName());
+            if(updatedUser.getLastName()!=null)a.setLastName(updatedUser.getLastName());
+            em.persist(a);
+            em.getTransaction().commit();
+        } catch (HibernateException e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            throw e;
+        }
+
+
+    }
+
     public void deleteUser(Long id){
         EntityTransaction transaction = em.getTransaction();
         try{

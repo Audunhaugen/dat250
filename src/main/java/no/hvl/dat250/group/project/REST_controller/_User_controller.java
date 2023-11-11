@@ -80,7 +80,7 @@ public class _User_controller {
             _User u = userDAO.getUser(id);
             if(u!=null){
                 if(u.getId() == userId){
-                    userDAO.updateUser(id, newUser);
+                    userDAO.updateUserData(id, newUser);
                     return new ResponseEntity<>(userDAO.getUser(id), HttpStatus.OK);
                 }
                 else{
@@ -93,6 +93,7 @@ public class _User_controller {
             }
         }
     }
+
 
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity delete(@PathVariable Long id, HttpSession session){
