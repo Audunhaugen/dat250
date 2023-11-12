@@ -46,14 +46,14 @@ public class PollDAO {
         try{
             transaction.begin();
             Poll a = em.find(Poll.class, id);
-            if(updatedPoll.getOwner()!=null)a.setOwner(updatedPoll.getOwner());
+            //if(updatedPoll.getOwner()!=null)a.setOwner(updatedPoll.getOwner());
             if(updatedPoll.getTitle()!=null)a.setTitle(updatedPoll.getTitle());
             if(updatedPoll.getDescription()!=null)a.setDescription(updatedPoll.getDescription());
             if(updatedPoll.getStatus()!=null)a.setStatus(updatedPoll.getStatus());
             if(updatedPoll.getPublicPoll()!=null)a.setPublicPoll(updatedPoll.getPublicPoll());
-            if(updatedPoll.getCreationTime()!=null)a.setCreationTime(updatedPoll.getCreationTime());
-            if(updatedPoll.getAnswers()!=null)a.setAnswers(updatedPoll.getAnswers());
-            if(updatedPoll.getDevices()!=null)a.setDevices(updatedPoll.getDevices());
+            //if(updatedPoll.getCreationTime()!=null)a.setCreationTime(updatedPoll.getCreationTime());
+            //if(updatedPoll.getAnswers()!=null)a.setAnswers(updatedPoll.getAnswers());
+            //if(updatedPoll.getDevices()!=null)a.setDevices(updatedPoll.getDevices());
             em.persist(a);
             em.getTransaction().commit();
         } catch (HibernateException e){

@@ -18,7 +18,7 @@ import java.util.random.RandomGenerator;
 import static java.lang.Thread.sleep;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class Linking_controller {
     static final String PERSISTENCE_UNIT_NAME = "group-project";
 
