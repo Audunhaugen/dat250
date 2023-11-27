@@ -44,13 +44,13 @@ public class Poll {
     @JsonIgnoreProperties({"polls","answers","password"})
     private _User owner;
 
-    @OneToMany(mappedBy = "poll")
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL)
     @Getter
     @Setter
     @JsonIgnoreProperties({"poll","_user","device"})
     private Set<Answer> answers = new HashSet<>();
 
-    @OneToMany(mappedBy = "poll")
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL)
     @Getter
     @Setter
     @JsonIgnoreProperties({"poll","answers"})

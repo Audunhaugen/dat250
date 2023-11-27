@@ -49,7 +49,8 @@ public class Linking_controller {
             if(p.getOwner().getId() == userId){
                 int code=-1;
                 while(true){
-                    code = RandomGenerator.getDefault().nextInt(9999);
+                    code = 1111;
+                            //RandomGenerator.getDefault().nextInt(9999);
                     if(!codes.containsKey(code))break;
                 }
                 codes.put(code, pollId);

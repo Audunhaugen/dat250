@@ -69,7 +69,7 @@ public class Answer_controller {
                 else{
                     long id = answerDAO.newAnswer(answer.getColor(),userId,answer.getPoll().getId(),null);
                     sender.sendMessage(answer);
-                    registerInMongo(answer);
+                    //registerInMongo(answer);
                     return new ResponseEntity<>(answerDAO.getAnswer(id), HttpStatus.OK);
                 }
 
@@ -78,7 +78,7 @@ public class Answer_controller {
         else{
             long id = answerDAO.newAnswer(answer.getColor(),userId,answer.getPoll().getId(),deviceId);
             sender.sendMessage(answer);
-            registerInMongo(answer);
+            //registerInMongo(answer);
             return new ResponseEntity<>(answerDAO.getAnswer(id), HttpStatus.OK);
         }
 
